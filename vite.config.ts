@@ -5,7 +5,6 @@ import WallpaperConfig, {
 
 import vue from '@vitejs/plugin-vue';
 import wallpaper from './plugins/compatible-wallpaper';
-import outJson from './plugins/out-json';
 
 import { resolve } from 'path';
 
@@ -23,20 +22,22 @@ export default defineConfig({
     },
   },
   plugins: [
-    vue(), 
+    vue(),
     wallpaper({
-      targets: 'ie >= 11', 
+      compatible: {
+        targets: 'ie >= 11',
+      },
+      outFiles: [
+        {
+          filename: 'project.json',
+          content: WallpaperConfig
+        }
+      ]
     }),
-    outJson([
-      {
-        filename: 'project.json',
-        content: WallpaperConfig
-      }
-    ])
   ],
-  build: {
+  build: process.env.GLOBAL_ENV === "local" ? undefined : {
     // wallpaper_engine 创建项目的地址
-    outDir:  wallpaper_engine_projects_path,
+    outDir: wallpaper_engine_projects_path,
   }
 })
 

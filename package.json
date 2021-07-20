@@ -3,6 +3,7 @@
   "name": "wallpaper-engine",
   "scripts": {
     "dev": "cross-env GLOBAL_ENV=dev vite",
+    "build:local": "vue-tsc --noEmit && cross-env GLOBAL_ENV=local vite build --mode development",
     "build:dev": "vue-tsc --noEmit && cross-env GLOBAL_ENV=dev vite build --mode development --emptyOutDir",
     "build:prod": "vue-tsc --noEmit && cross-env GLOBAL_ENV=prod vite build --emptyOutDir",
     "serve": "vite preview"
