@@ -50,6 +50,9 @@ export interface WallpaperConfig {
  * 根据自己 wallpaper 安装的世界路径配置(进行改代)
  */
 const wallpaperPath = "D:\\Steam\\steamapps\\common\\wallpaper_engine\\projects\\myprojects";
+/**
+ * 壁纸名称(同步到 steam 社区)
+ */
 const projectName = "";
 
 
@@ -63,7 +66,7 @@ function getConfig(config: WallpaperConfig): [WallpaperConfig, string] {
   // 定义发布时的名称和发布构建的路径
   if(process.env.GLOBAL_ENV === "prod") {
     config.title = projectName || name;
-    createFilename = new Function(`return ${[...name].map(i => i.charCodeAt(0)).join("+")}`)();
+    createFilename = new Function(`return ${[...config.title].map(i => i.charCodeAt(0)).join("+")}`)();
   }
 
   return [config, `${wallpaperPath}\\${createFilename}`]
