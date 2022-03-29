@@ -4,6 +4,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "allowJs": true,
+    "outDir": "",
     "strict": true,
     "jsx": "preserve",
     "sourceMap": true,
@@ -15,5 +16,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["global.d.ts", "src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue",]
+  "include": ["global.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.jsx", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue",]
 }
