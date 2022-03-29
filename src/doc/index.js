@@ -78,3 +78,12 @@ let type;
 let keyof;
 
 
+/**
+ * 定义全局接口
+ * @global
+ * typedef 内的类型完全可以使用 ts 类型的写法
+ * @typedef {{
+ *  (data: boolean): string;
+ *  isStart: number
+ * }} TWart
+ */
