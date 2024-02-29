@@ -9,7 +9,9 @@ import legacy, { Options } from '@vitejs/plugin-legacy';
 function deleteNoModule(result: HtmlTagDescriptor[]) {
   result.forEach(i => {
     if (i.tag === 'script') {
-      i.attrs.nomodule && delete i.attrs.nomodule;
+      if(i.attrs) {
+        i.attrs.nomodule && delete i.attrs.nomodule;
+      }
     }
   });
   return result;
@@ -74,7 +76,7 @@ interface WallpaperOptions {
 export default function (options: WallpaperOptions): Plugin[] {
   let plugins = legacy(options.compatible) as unknown as Plugin[];
   plugins.some(i => {
-    if (i.name === 'legacy-post-process' && i.transformIndexHtml) {
+    if (i.name === 'vite:legacy-post-process' && i.transformIndexHtml) {
       if (typeof i.transformIndexHtml === 'function') {
         const indexHtmlTransform = i.transformIndexHtml;
         i.transformIndexHtml = generateHandle(indexHtmlTransform)
@@ -95,7 +97,7 @@ export default function (options: WallpaperOptions): Plugin[] {
       apply: 'build',
       generateBundle(outputOptions, bundle) {
         Object.entries(bundle).some(([key, value]) => {
-          const buildFilename = value.fileName.split("/").pop().split(".").shift();
+          const buildFilename = value.fileName.split("/").pop()!.split(".").shift();
           if(value.name === 'index' && buildFilename === "index") {
             // 删除 module 引入的文件 chunk，file协议无法使用。
             delete bundle[key];
@@ -115,7 +117,7 @@ export default function (options: WallpaperOptions): Plugin[] {
       generateBundle(outputOptions, bundle) {
         if (options) {
           const filenames = Object.keys(bundle);
-          options.outFiles.forEach(option => {
+          options.outFiles?.forEach(option => {
             const fileName = option.filename;
             if (!filenames.includes(fileName)) {
               this.emitFile({

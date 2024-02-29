@@ -47,9 +47,9 @@ export interface WallpaperConfig {
 }
 
 /**
- * 根据自己 wallpaper 安装的世界路径配置(进行改代)
+ * 根据自己 喜好配置
  */
-const wallpaperPath = "D:\\Steam\\steamapps\\common\\wallpaper_engine\\projects\\myprojects";
+const wallpaperPath = "C:\\Users\\inck\\Desktop\\wallpaper_engine";
 /**
  * 壁纸名称(同步到 steam 社区)
  */
