@@ -3,9 +3,9 @@
   "name": "wallpaper-engine",
   "scripts": {
     "dev": "cross-env GLOBAL_ENV=dev vite",
-    "build:local": "cross-env GLOBAL_ENV=local vite build --mode development",
-    "build:dev": "cross-env GLOBAL_ENV=dev vite build --mode development --emptyOutDir",
-    "build:prod": "cross-env GLOBAL_ENV=prod vite build --emptyOutDir",
+    "build:local": "node ./script/generate.js &&cross-env GLOBAL_ENV=local vite build --mode development",
+    "build:dev": "node ./script/generate.js &&cross-env GLOBAL_ENV=dev vite build --mode development --emptyOutDir",
+    "build:prod": "node ./script/generate.js &&cross-env GLOBAL_ENV=prod vite build --emptyOutDir",
     "serve": "vite preview"
   },
   "dependencies": {

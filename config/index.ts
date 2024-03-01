@@ -1,5 +1,5 @@
 /// <reference types="./wallpaper" />
-import { name } from '../package.json';
+import { name } from "../package.json";
 
 /**
  * Wallpaper 提供给用户自定义的一些配置项
@@ -28,11 +28,11 @@ export interface WallpaperConfig {
   /**
    * 壁纸类型
    */
-  type: "Web",
+  type: "Web";
   /**
    * 壁纸封面
    */
-  preview?: string,
+  preview?: string;
   /**
    * 入口文件 (index.html)
    */
@@ -43,37 +43,41 @@ export interface WallpaperConfig {
   general?: {
     properties?: SchemeConfigProps;
     supportsaudioprocessing?: boolean;
-  }
+  };
 }
 
-/**
- * 根据自己 喜好配置
- */
-const wallpaperPath = "C:\\Users\\inck\\Desktop\\wallpaper_engine";
 /**
  * 壁纸名称(同步到 steam 社区)
  */
 const projectName = "";
 
-
 /**
  * 根据环境变量生成 最终壁纸 配置项与构建路径
  */
-function getConfig(config: WallpaperConfig): [WallpaperConfig, string] {
-  
+async function getConfig(
+  config: WallpaperConfig
+): Promise<[WallpaperConfig, string]> {
+  let local: {
+    wallpaperDefaultPath: string;
+  } = (await import("./.local")) as any;
+
   let createFilename = "dev";
 
   // 定义发布时的名称和发布构建的路径
-  if(process.env.GLOBAL_ENV === "prod") {
+  if (process.env.GLOBAL_ENV === "prod") {
     config.title = projectName || name;
-    createFilename = new Function(`return ${[...config.title].map(i => i.charCodeAt(0)).join("+")}`)();
+    createFilename = new Function(
+      `return ${[...config.title].map((i) => i.charCodeAt(0)).join("+")}`
+    )();
   }
 
-  return [config, `${wallpaperPath}\\${createFilename}`]
+  return [
+    config,
+    `${local.wallpaperDefaultPath}\\${createFilename}`,
+  ];
 }
 
-
-const [wallpaperConfig, buildPath] = getConfig({
+const wallpaperConfig = getConfig({
   title: "dev",
   type: "Web",
   file: "index.html",
@@ -83,13 +87,11 @@ const [wallpaperConfig, buildPath] = getConfig({
         order: 0,
         text: "ui_browse_properties_scheme_color",
         type: "color",
-        value: "0 0 0"
-      }
+        value: "0 0 0",
+      },
     },
-    supportsaudioprocessing: true
+    supportsaudioprocessing: true,
   },
-})
-
+});
 
 export default wallpaperConfig;
-export const wallpaper_engine_projects_path = buildPath;
