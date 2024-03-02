@@ -1,12 +1,14 @@
 const {
   readFile,
   writeFile,
+  appendFileSync,
   existsSync,
   readdirSync,
   statSync,
   unlinkSync,
   rmdirSync,
 } = require("fs");
+const readline = require("readline");
 const { resolve, join } = require("path");
 const localPath = resolve(__dirname, "../config/.local.ts");
 const defaultPath = "C:\\\\Users\\\\wallpaper_engine_0527";
@@ -43,8 +45,37 @@ readFile(localPath, (err, data) => {
     if (!txt.includes(defaultPath)) {
       const isExist = existsSync(defaultPath);
       if (isExist) {
-        // [TODO] 可添加 控制台对话 询问开发者是否删除
-        deleteDir(defaultPath);
+        const [isClear] = txt.match(/(?<=clearCache\s*=\s*)(true|false)/) || [
+          null,
+        ];
+        if (isClear == "true") {
+          deleteDir(defaultPath);
+        } else if (isClear == null) {
+          const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+          });
+          rl.question(
+            `存在上一次构建的缓存，在${defaultPath.replace(
+              /\\\\/g,
+              "/"
+            )}，是否删除？ Y(yes) N(no)`,
+            (answer) => {
+              answer = answer.trim();
+              console.log(`输入结果: ${answer}！`);
+              if (answer == "Y") {
+                deleteDir(defaultPath);
+                rl.close();
+              } else if (answer == "N") {
+                appendFileSync(
+                  localPath,
+                  `\r\nexport const clearCache = false;`
+                );
+                rl.close();
+              }
+            }
+          );
+        }
       }
     }
   }
