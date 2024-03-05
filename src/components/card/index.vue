@@ -1,25 +1,45 @@
 <script lang="ts">
 import { adjust, clamp, round } from "@/helpers/Math";
 import { useSpring } from "@/utils/spring";
-import { defineComponent, ref, computed } from "vue";
+import { CardProps } from './types.d'
+import {
+  defineComponent,
+  ref,
+  computed,
+  defineProps,
+  watch,
+  onMounted,
+} from "vue";
+import {
+  springInteractSettings,
+  springPopoverSettings,
+  activateSpring,
+} from "./const";
 export default defineComponent({
   name: "card",
 });
 </script>
 
 <script lang="ts" setup>
-const backImgUrl =
-  "https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg";
-const frontImgUrl = "https://images.pokemontcg.io/swsh12pt5/160_hires.png";
-const active = ref(false);
-const interacting = ref(false);
+const props = defineProps<CardProps>();
+console.log(props, "props");
 
-const activate = (e: WindowEventMap["click"]) => {
-  active.value = true;
+const active = ref(false);
+const loading = ref(true);
+const interacting = ref(false);
+const cardHtmlNode = ref<HTMLDivElement>();
+
+const timer = {
+  reposition: null as any,
 };
 
-const springInteractSettings = { stiffness: 10000, damping: 100 };
-const springPopoverSettings = { stiffness: 5000, damping: 260 };
+const activate = (e: WindowEventMap["click"]) => {
+  if (active.value) {
+    active.value = false;
+  } else {
+    active.value = true;
+  }
+};
 
 const interact = (e: WindowEventMap["pointermove"]) => {
   !interacting.value && (interacting.value = true);
@@ -52,21 +72,106 @@ const interact = (e: WindowEventMap["pointermove"]) => {
     o: 1,
   });
 };
-const interactEnd = (e: WindowEventMap["mouseout"]) => {
-  // setTimeout(() => {
-  const out = {
-    stiffness: 200,
-    damping: 8,
-  };
-  interacting.value = false;
-  spring.rotate.set({ x: 0, y: 0 }, out);
-  spring.glare.set({ x: 50, y: 50, o: 0 }, out);
-  spring.background.set({ x: 50, y: 50 }, out);
-  // }, 500);
+
+const interactEnd = (e: WindowEventMap["mouseout"] | null, delay = 500) => {
+  setTimeout(() => {
+    const out = {
+      stiffness: 200,
+      damping: 8,
+    };
+    interacting.value = false;
+    spring.rotate.set({ x: 0, y: 0 }, out);
+    spring.glare.set({ x: 50, y: 50, o: 0 }, out);
+    spring.background.set({ x: 50, y: 50 }, out);
+  }, delay);
 };
+
 const deactivate = (e: WindowEventMap["blur"]) => {
   active.value = false;
+  interactEnd(null, 0);
 };
+
+/** 更新图片居中的位置 */
+const reposition = (e: WindowEventMap["scroll"]) => {
+  clearTimeout(timer.reposition);
+  timer.reposition = setTimeout(() => {
+    if (active.value) {
+      setCenter();
+    }
+  }, 300);
+};
+
+/** 卡片正面图加载完后触发 */
+const imageLoader = (e: Event) => {
+  loading.value = false;
+  if (props.mask || props.foil) {
+    // 图片加载完后添加炫光
+    foilStyles.value = `
+    --mask: url(${props.mask});
+    --foil: url(${props.foil});
+      `;
+  }
+};
+
+/** 卡片居中 */
+const setCenter = () => {
+  const rect = cardHtmlNode.value!.getBoundingClientRect(); // get element's size/position
+  const view = document.documentElement; // get window/viewport size
+
+  const delta = {
+    x: round(view.clientWidth / 2 - rect.x - rect.width / 2),
+    y: round(view.clientHeight / 2 - rect.y - rect.height / 2),
+  };
+  spring.translate.set(
+    {
+      x: delta.x,
+      y: delta.y,
+    },
+    activateSpring
+  );
+};
+
+/** 打开卡片 */
+const popover = () => {
+  const rect = cardHtmlNode.value!.getBoundingClientRect(); // get element's size/position
+  let delay = 100;
+  let scaleW = (window.innerWidth / rect.width) * 0.9;
+  let scaleH = (window.innerHeight / rect.height) * 0.9;
+  let scaleF = 1.75;
+  setCenter();
+  // if (firstPop) {
+  // delay = 1000;
+  spring.rotateDelta.set(
+    {
+      x: 360,
+      y: 0,
+    },
+    activateSpring
+  );
+  // }
+  // firstPop = false;
+  spring.scale.set({ value: Math.min(scaleW, scaleH, scaleF) }, activateSpring);
+  interactEnd(null, delay);
+};
+
+/** 关闭卡片 */
+const retreat = () => {
+  spring.scale.set({ value: 1 }, activateSpring);
+  spring.translate.set({ x: 0, y: 0 }, activateSpring);
+  spring.rotateDelta.set({ x: 0, y: 0 }, activateSpring);
+  interactEnd(null, 100);
+};
+
+watch(
+  () => active.value,
+  (value) => {
+    if (value) {
+      popover();
+    } else {
+      retreat();
+    }
+  }
+);
 
 const spring = {
   /** 拿起卡片的角度 */
@@ -121,7 +226,7 @@ const cosmosPosition = {
   x: Math.floor(randomSeed.x * 734),
   y: Math.floor(randomSeed.y * 1280),
 };
-let foilStyles = ``;
+const foilStyles = ref(``);
 const staticStyles = `
     --seedx: ${randomSeed.x};
     --seedy: ${randomSeed.y};
@@ -152,17 +257,36 @@ const dynamicStyles = computed(
     --translate-y: ${spring.translate.target.y}px;
 	`
 );
+
+onMounted(() => {
+  window.addEventListener("scroll", reposition);
+  return () => {
+    window.removeEventListener("scroll", reposition);
+  };
+});
 </script>
 
 <template>
   <div
-    :class="{
-      card: 'card',
-      interactive: 'interactive',
-      active,
-      interacting,
-    }"
+    :class="[
+      {
+        card: 'card',
+        interactive: 'interactive',
+        active,
+        masked: !!mask,
+        loading,
+        interacting,
+      },
+      props.glow,
+    ]"
+    :data-number="number"
+    :data-set="set"
+    :data-subtypes="subtypes"
+    :data-supertype="supertype"
+    :data-rarity="rarity"
+    :data-trainer-gallery="true"
     :style="dynamicStyles"
+    ref="cardHtmlNode"
   >
     <div class="card-translate">
       <button
@@ -176,20 +300,22 @@ const dynamicStyles = computed(
       >
         <img
           class="card-back"
-          :src="backImgUrl"
+          :src="props.back"
           loading="lazy"
           width="660"
           height="921"
         />
         <div class="card-front" :style="(staticStyles, foilStyles)">
           <img
-            :src="frontImgUrl"
+            :src="props.front"
             alt=""
+            @load="imageLoader"
             loading="lazy"
             width="660"
             height="921"
           />
           <div class="card-shine"></div>
+          <!-- 聚焦灯光效果层 -->
           <div class="card-glare"></div>
         </div>
       </button>
@@ -231,6 +357,7 @@ const dynamicStyles = computed(
 
   &,
   .card-rotator {
+    /** 圆角 */
     aspect-ratio: var(--card-aspect);
     border-radius: var(--card-radius);
   }
