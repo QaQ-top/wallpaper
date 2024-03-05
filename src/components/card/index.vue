@@ -284,7 +284,7 @@ onMounted(() => {
     :data-subtypes="subtypes"
     :data-supertype="supertype"
     :data-rarity="rarity"
-    :data-trainer-gallery="true"
+    :data-trainer-gallery="false"
     :style="dynamicStyles"
     ref="cardHtmlNode"
   >
@@ -324,25 +324,6 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-/* .card:not(.interactive):hover {
-  --pointer-x: 25% !important;
-  --pointer-y: 10% !important;
-  --pointer-from-center: 0.9 !important;
-  --pointer-from-top: 0.11 !important;
-  --pointer-from-left: 0.25 !important;
-  --card-scale: 1.1 !important;
-  --card-opacity: 1 !important;
-  --translate-x: 0px !important;
-  --translate-y: -10px !important;
-  --rotate-x: 7deg !important;
-  --rotate-y: -19deg !important;
-  --background-x: 44% !important;
-  --background-y: 36% !important;
-} */
-
-.interacting {
-}
-
 .card {
   --foil-brightness: 0.55;
   /* 将卡放置在新的转换层上，以确保它有硬加速 */
@@ -354,6 +335,9 @@ onMounted(() => {
   /* 如果卡片按比例放大，确保卡片在其他卡片之上 */
   z-index: calc(var(--card-scale) * 2);
   will-change: transform, visibility, z-index;
+  &.interacting {
+    z-index: calc(var(--card-scale) * 120);
+  }
 
   &,
   .card-rotator {
@@ -445,137 +429,5 @@ onMounted(() => {
       }
     }
   }
-}
-</style>
-
-<style scoped lang="scss">
-.card-back {
-  background-color: var(--card-back);
-  -webkit-transform: rotateY(180deg) translateZ(1px);
-  transform: rotateY(180deg) translateZ(1px);
-  backface-visibility: visible;
-}
-
-.card-front,
-.card-front * {
-  backface-visibility: hidden;
-}
-
-.card-front {
-  opacity: 1;
-  transition: opacity 0.33s ease-out;
-  -webkit-transform: translate3d(0px, 0px, 0.01px);
-  transform: translate3d(0px, 0px, 0.01px);
-}
-
-.loading {
-  .card-front {
-    opacity: 0;
-  }
-
-  .card-back {
-    -webkit-transform: rotateY(0deg);
-    transform: rotateY(0deg);
-  }
-}
-
-/**
-  
-Shine & Glare Effects
-
-**/
-
-.card-shine {
-  display: grid;
-  transform: translateZ(1px);
-  overflow: hidden;
-  z-index: 3;
-
-  background: transparent;
-  background-size: cover;
-  background-position: center;
-
-  filter: brightness(0.85) contrast(2.75) saturate(0.65);
-  mix-blend-mode: color-dodge;
-
-  opacity: var(--card-opacity);
-}
-
-.card-shine:before,
-.card-shine:after {
-  --sunpillar-clr-1: var(--sunpillar-5);
-  --sunpillar-clr-2: var(--sunpillar-6);
-  --sunpillar-clr-3: var(--sunpillar-1);
-  --sunpillar-clr-4: var(--sunpillar-2);
-  --sunpillar-clr-5: var(--sunpillar-3);
-  --sunpillar-clr-6: var(--sunpillar-4);
-
-  grid-area: 1/1;
-  transform: translateZ(1px);
-  border-radius: var(--card-radius);
-}
-
-.card-shine:after {
-  --sunpillar-clr-1: var(--sunpillar-6);
-  --sunpillar-clr-2: var(--sunpillar-1);
-  --sunpillar-clr-3: var(--sunpillar-2);
-  --sunpillar-clr-4: var(--sunpillar-3);
-  --sunpillar-clr-5: var(--sunpillar-4);
-  --sunpillar-clr-6: var(--sunpillar-5);
-
-  transform: translateZ(1.2px);
-}
-
-.card-glare {
-  /* make sure the glare doesn't clip */
-  transform: translateZ(1.41px);
-  overflow: hidden;
-  /** 鼠标悬浮灯光照射效果 */
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(0, 0%, 100%, 0.8) 10%,
-    hsla(0, 0%, 100%, 0.65) 20%,
-    hsla(0, 0%, 0%, 0.5) 90%
-  );
-
-  opacity: var(--card-opacity);
-  mix-blend-mode: overlay;
-}
-
-/**
-
-  Masking Effects
-
-**/
-
-.card.masked .card-shine,
-.card.masked .card-shine:before,
-.card.masked .card-shine:after {
-  /** masking image for cards which are masked **/
-  -webkit-mask-image: var(--mask);
-  mask-image: var(--mask);
-  -webkit-mask-size: cover;
-  mask-size: cover;
-  -webkit-mask-position: center center;
-  mask-position: center center;
-}
-
-.card[data-rarity="rare holo"] .card-glare:after,
-.card[data-rarity="rare holo cosmos"] .card-glare:after,
-.card[data-rarity$="reverse holo"] .card-glare:after {
-  clip-path: var(--clip);
-}
-
-.card[data-rarity="rare holo"][data-subtypes^="stage"] .card-glare:after,
-.card[data-rarity="rare holo cosmos"][data-subtypes^="stage"] .card-glare:after,
-.card[data-rarity$="reverse holo"][data-subtypes^="stage"] .card-glare:after {
-  clip-path: var(--clip-stage);
-}
-
-.card[data-rarity="rare holo"][data-supertype="trainer"] .card-glare:after,
-.card[data-rarity="rare holo cosmos"][data-supertype="trainer"]
-  .card-glare:after,
-.card[data-rarity$="reverse holo"][data-supertype="trainer"] .card-glare:after {
-  clip-path: var(--clip-trainer);
 }
 </style>

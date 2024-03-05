@@ -4,7 +4,7 @@ export interface CardProps {
   mask: string;
   foil: string;
   set: string;
-  number: number;
+  number: number | string;
   subtypes: string;
   supertype: string;
   rarity: string;
