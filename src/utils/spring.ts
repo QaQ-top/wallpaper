@@ -1,10 +1,18 @@
 import { animate } from "popmotion";
-import { reactive } from "vue";
+import { UnwrapNestedRefs, reactive } from "vue";
+
+interface Spring<T> {
+  target: UnwrapNestedRefs<T>;
+  set: (
+    properties: Partial<T>,
+    spring?: { stiffness: number; damping: number }
+  ) => void
+}
 
 export const useSpring = <T extends object>(
   values: T,
   initSpring?: { stiffness: number; damping: number }
-) => {
+): Spring<T> => {
   const target = reactive(values);
   const stopMap = new Map<string, Function>();
   return {

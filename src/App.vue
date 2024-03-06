@@ -3,8 +3,8 @@
   <!-- <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" /> -->
   <div :style="{ margin: '100px', width: '300px' }">
     <Card
-      :back="backImgUrl"
-      :front="frontImgUrl"
+      back="backImgUrl"
+      front="frontImgUrl"
       :mask="mask"
       :foil="foil"
       number="160"
