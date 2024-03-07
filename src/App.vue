@@ -35,8 +35,8 @@ export default defineComponent({
 const backImgUrl = "/tcg-card-back-2x.jpg";
 const frontImgUrl = "/160_hires.png";
 const mask =
-  "/160_foil_etched_swsecret_2x.webp";
-const  foil = "/160_mask_etched_swsecret_2x.webp";
+  "/160_mask_etched_swsecret_2x.webp";
+const  foil = "/160_foil_etched_swsecret_2x.webp";
 </script>
 
 <style>
