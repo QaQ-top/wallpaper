@@ -739,19 +739,20 @@ onMounted(() => {
     &:before {
       content: "";
       
-      /* background-image: var(--foil);
-      background-size: var(--imgsize);
+      background-image: var(--foil);
+      background-size: var(--img-size);
       background-position: center center;
       filter: brightness(2.5) contrast(1);
 
       opacity: calc((var(--pointer-from-center) + 0.4 ) * 0.6 );
-      mix-blend-mode: multiply; */
+      /** 与background-blend-mode用法一致，不过mix-blend-mode会将直系父元素的内容和元素的背景如何混合 */
+      mix-blend-mode: multiply;
 
     }
     &:after {
       content: "";
       
-      /* -webkit-mask-image: none !important;
+      -webkit-mask-image: none !important;
       mask-image: none !important;
 
       background-image: 
@@ -774,17 +775,17 @@ onMounted(() => {
         var(--pointer-x) var(--pointer-y);
 
       filter: brightness(calc((var(--pointer-from-center)*0.35) + 0.35)) contrast(2) saturate(1);
-      mix-blend-mode: exclusion; */
+      mix-blend-mode: exclusion;
     }
   }
 
   .card-glare {
-    /* background-image: 
+    background-image: 
       radial-gradient( farthest-corner circle at var(--pointer-x) var(--pointer-y), hsl(0,0%,80%), hsla(0, 0%, 74.9%, 0.25) 30%, hsl(0, 0%, 21.6%) 130% );
 
     filter: brightness(.9) contrast(2);
     opacity: calc( var(--pointer-from-center) * .9 );
-    mix-blend-mode: hard-light; */
+    mix-blend-mode: hard-light;
 
   }
 }
