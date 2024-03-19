@@ -720,9 +720,6 @@ onMounted(() => {
     --shift: 1px;
     --img-size: cover;
 
-    -webkit-mask-image: none !important;
-      mask-image: none !important;
-
     background-image:
       var(--glitter),
       var(--glitter),
@@ -779,6 +776,16 @@ onMounted(() => {
       mix-blend-mode: overlay;
 
     }
+  }
+
+  .card-glare {
+    background-image:
+      radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
+        hsla(45, 8%, 80%, 0.3) 0%,
+        hsl(22, 15%, 12%) 180%);
+
+    filter: brightness(1.3) contrast(1.5);
+    mix-blend-mode: hard-light;
   }
 }
 
