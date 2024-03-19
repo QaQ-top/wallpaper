@@ -355,6 +355,20 @@ onMounted(() => {
   --sunpillar-clr-4: var(--sunpillar-4);
   --sunpillar-clr-5: var(--sunpillar-5);
   --sunpillar-clr-6: var(--sunpillar-6);
+
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --card-scale: 1;
+  --card-opacity: 0;
+  --translate-x: 0px;
+  --translate-y: 0px;
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  --background-x: var(--pointer-x);
+  --background-y: var(--pointer-y);
+  --pointer-from-center: 0;
+  --pointer-from-top: var(--pointer-from-center);
+  --pointer-from-left: var(--pointer-from-center);
 }
 
 .card {
@@ -616,7 +630,7 @@ onMounted(() => {
     background: transparent;
     background-size: cover;
     background-position: center;
-
+    /** 亮度 对比度 饱和度 */
     filter: brightness(.85) contrast(2.75) saturate(.65);
     mix-blend-mode: color-dodge;
 
@@ -700,6 +714,75 @@ onMounted(() => {
   clip-path: var(--clip-trainer);
 }
 
+.card[data-rarity="rare secret"] {
+  .card-shine {
+
+    --shift: 1px;
+    --img-size: cover;
+
+    -webkit-mask-image: none !important;
+      mask-image: none !important;
+
+    background-image:
+      var(--glitter),
+      var(--glitter),
+      conic-gradient(var(--sunpillar-clr-4),
+        var(--sunpillar-clr-5),
+        var(--sunpillar-clr-6),
+        var(--sunpillar-clr-1),
+        var(--sunpillar-clr-4)),
+      radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
+        hsla(150, 00%, 0%, .98) 10%,
+        hsla(0, 0%, 95%, .15) 90%);
+
+    background-size: var(--glitter-size) var(--glitter-size), var(--glitter-size) var(--glitter-size), cover, cover;
+    background-position: 45% 45%, 55% 55%, center center, center center;
+    background-blend-mode: soft-light, hard-light, overlay;
+    mix-blend-mode: color-dodge;
+    filter: brightness(calc(0.4 + (var(--pointer-from-center) * 0.2))) contrast(1) saturate(2.7);
+
+    &:before {
+
+      content: "";
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+
+      background-image:
+        var(--foil),
+        linear-gradient(45deg, hsl(46, 95%, 50%), hsl(52, 100%, 69%)),
+        radial-gradient(farthest-corner circle at var(--pointer-x) var(--pointer-y),
+          hsla(10, 20%, 90%, 0.95) 10%,
+          hsl(0, 0%, 0%) 70%);
+
+      background-size: var(--img-size), cover, cover;
+      background-position: center center, center center, center center;
+      background-blend-mode: hard-light, multiply;
+
+      mix-blend-mode: lighten;
+      filter: brightness(1.25) contrast(1.25) saturate(0.35);
+      opacity: .8;
+
+    }
+
+    &:after {
+
+      content: "";
+
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+
+      background-image: var(--glitter);
+      background-size: var(--glitter-size) var(--glitter-size);
+      background-position: calc(50% - ((var(--shift)*2) * var(--pointer-from-left)) + var(--shift)) calc(50% - ((var(--shift)*2) * var(--pointer-from-top)) + var(--shift));
+
+      filter: brightness(calc((var(--pointer-from-center)*0.6) + 0.6)) contrast(1.5);
+      mix-blend-mode: overlay;
+
+    }
+  }
+}
+
+
 .card[data-rarity="rare secret"][data-set="swsh12pt5"][data-number="160"] {
   .card-shine {
     --r-clr-1: hsl(0, 57%, 37%);
@@ -767,7 +850,7 @@ onMounted(() => {
       background-blend-mode: soft-light;
 
       background-size: 
-        var(--glittersize) var(--glittersize), 
+        var(--glitter-size) var(--glitter-size), 
         400% 400%;
 
       background-position: 
